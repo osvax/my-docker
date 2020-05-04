@@ -1,0 +1,5 @@
+FROM nginx:latest
+
+ADD /_docker/nginx/cargo-trans.conf /etc/nginx/conf.d/cargo-trans.conf
+
+WORKDIR /var/www

@@ -1,0 +1,44 @@
+version: '3'
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: _docker/nginx.docker
+    container_name: cargo_trans_web
+    ports:
+    - 80:80
+    volumes:
+    - ./:/var/www
+    - ./storage/logs/nginx:/var/log/nginx
+    depends_on:
+      - app
+    links:
+      - app
+    working_dir: /var/www
+
+
+  app:
+    build:
+      context: .
+      dockerfile: _docker/php-fpm.docker
+    container_name: cargo_trans_app
+    volumes:
+    - ./:/var/www
+    links:
+      - db
+    working_dir: /var/www
+
+  db:
+    build:
+      context: ./
+      dockerfile: _docker/mysql.docker
+    restart: always
+    container_name: cargo_trans_db
+    volumes:
+    - ./storage/mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: cargo_trans
+      MYSQL_ROOT_PASSWORD: 7753
+    ports:
+    - 3306:3306
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
